@@ -1,0 +1,7 @@
+name: ls
+description: List directory contents
+
+examples:
+  - ls
+  - ls -la
+  - ls -lh
