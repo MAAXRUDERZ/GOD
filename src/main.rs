@@ -1,6 +1,7 @@
 mod model;
 mod provider;
 mod renderer;
+mod parser;
 
 use clap::Parser;
 use provider::load_documentation;
