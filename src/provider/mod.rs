@@ -1,3 +1,5 @@
 pub mod tldr;
+pub mod man;
+pub mod loader;
 
-pub use tldr::load_documentation;
+pub use loader::load;
