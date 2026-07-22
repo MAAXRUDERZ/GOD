@@ -9,3 +9,4 @@ serde = { version = "1", features = ["derive"] }
 serde_yaml = "0.9"
 colored = "3"
 dirs = "6"
+flate2 = "1.1"

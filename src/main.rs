@@ -2,10 +2,9 @@ mod model;
 mod provider;
 mod renderer;
 mod parser;
+mod formatter;
 
 use clap::Parser;
-use provider::load_documentation;
-use renderer::render;
 
 /// GOD - Better than man pages
 #[derive(Parser, Debug)]
@@ -20,26 +19,23 @@ struct Cli {
 fn main() {
     let cli = Cli::parse();
 
-    match cli.command {
-        Some(cmd) => {
-            println!("GOD v0.1.0");
-            println!("Command: {}\n", cmd);
+    let Some(cmd) = cli.command else {
+        println!("Welcome to GOD!");
+        println!("Usage:");
+        println!("    god <command>");
+        return;
+    };
 
-            match load_documentation(&cmd) {
-                Ok(doc) => {
-                    render(&doc);
-                }
+    println!("GOD v0.1.0");
+    println!("Command: {}\n", cmd);
 
-                Err(e) => {
-                    eprintln!("Error: {}", e);
-                }
-            }
+    match provider::load(&cmd) {
+        Some(doc) => {
+            renderer::render(&doc);
         }
 
         None => {
-            println!("Welcome to GOD!");
-            println!("Usage:");
-            println!("    god <command>");
+            println!("No documentation found for '{}'.", cmd);
         }
     }
 }

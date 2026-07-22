@@ -45,8 +45,12 @@ pub fn parse_tldr(content: &str) -> CommandDoc {
     }
 
     CommandDoc {
-        name,
-        description,
-        examples,
+    name,
+    description,
+    examples,
+
+    flags: Vec::new(),
+    warnings: Vec::new(),
+    related: Vec::new(),
     }
 }
