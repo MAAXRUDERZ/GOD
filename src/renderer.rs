@@ -2,43 +2,40 @@ use colored::*;
 
 use crate::formatter::format_placeholders;
 use crate::model::CommandDoc;
+use crate::ui::{
+    colors::{BOLD, HACKER_GREEN, RESET},
+    render,
+};
 
 pub fn render(doc: &CommandDoc) {
     println!();
 
-    println!("{}", "════════════════════════════════════".bright_blue());
-    println!(
-        "{}",
-        format!("📖 {}", doc.name.to_uppercase())
-            .bright_green()
-            .bold()
-    );
-    println!("{}", "════════════════════════════════════".bright_blue());
+    render::header(&doc.name);
 
-    println!();
     println!("{}", doc.description.white());
-
-    // ---------------- Examples ----------------
+    println!();
 
     if !doc.examples.is_empty() {
+        render::section("Examples");
         println!();
-        println!("{}", "Examples".yellow().bold());
 
-        for example in &doc.examples {
-            println!();
-            println!("• {}", example.description.bold());
+        for (i, example) in doc.examples.iter().enumerate() {
+            println!("{}", example.description.bold());
 
             let command = format_placeholders(&example.command);
 
-            println!("    {}", command.cyan());
+            println!("  > {HACKER_GREEN}{BOLD}{command}{RESET}");
+
+            if i + 1 != doc.examples.len() {
+                println!();
+            }
         }
+
+        println!();
     }
 
-    // ---------------- Flags ----------------
-
     if !doc.flags.is_empty() {
-        println!();
-        println!("{}", "Flags".yellow().bold());
+        render::section("Important Flags");
         println!();
 
         for flag in &doc.flags {
@@ -56,31 +53,31 @@ pub fn render(doc: &CommandDoc) {
                 names.push_str(long);
             }
 
-            println!("{:<35} {}", names.cyan(), flag.description.white());
+            println!("{}", names.bright_cyan().bold());
+            println!("    {}", flag.description.white());
+            println!();
         }
     }
-
-    // ---------------- Warnings ----------------
 
     if !doc.warnings.is_empty() {
+        render::section("Warnings");
         println!();
-        println!("{}", "Warnings".red().bold());
 
         for warning in &doc.warnings {
-            println!("⚠ {}", warning);
+            println!("{}", warning.red().bold());
         }
+
+        println!();
     }
 
-    // ---------------- Related ----------------
-
     if !doc.related.is_empty() {
+        render::section("Related Commands");
         println!();
-        println!("{}", "Related Commands".yellow().bold());
 
         for related in &doc.related {
             println!("• {}", related.green());
         }
-    }
 
-    println!();
+        println!();
+    }
 }

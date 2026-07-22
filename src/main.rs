@@ -3,6 +3,7 @@ mod provider;
 mod renderer;
 mod parser;
 mod formatter;
+mod ui;
 
 use clap::Parser;
 
