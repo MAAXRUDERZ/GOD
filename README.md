@@ -2,7 +2,7 @@ GOD
 
 GOD is a command-line documentation tool for Linux.
 
-It started as a small project because I found myself constantly switching between TLDR pages and man pages. TLDR is great when you just want an example, but it often leaves out useful information. Man pages have everything, but they can be overwhelming for everyday use.
+It started as a small project because I found myself constantly switching between TLDR pages and man pages. TLDR is great when you just need a quick example, but it often leaves out useful information. Man pages contain everything, but they can be difficult to navigate for everyday use.
 
 The goal of GOD is to combine both into a single interface that is easier to read while still providing the details when you need them.
 
@@ -20,7 +20,7 @@ Screenshots
 
   ![](assets/screenshots/cat.png)
 
-Building
+Installation
 
 - Clone the repository.
 
@@ -30,15 +30,13 @@ Building
 
       cd GOD
 
-- Build the project.
-
-      cargo build --release
-
-Installing
-
-- Install GOD locally.
+- Install GOD.
 
       cargo install --path .
+
+- If you make changes to the source code later, reinstall the updated version.
+
+      cargo install --path . --force
 
 Usage
 
@@ -46,23 +44,23 @@ Usage
 
       god ls
 
-- Display every available flag.
+- Show every available flag.
 
       god ls --all-flags
 
 Current Features
 
 - Combines TLDR pages with man pages.
+- Presents the most commonly used flags by default.
+- Shows the complete flag list with --all-flags.
 - Clean terminal interface.
-- Practical examples.
-- Important flags shown by default.
-- Full flag list available on demand.
+- Practical examples from TLDR pages.
 - ANSI color output.
 - Works completely offline.
 
 Why?
 
-I wanted a tool that was faster to read than man pages without losing the information that makes them useful. GOD is my attempt at solving that problem by presenting the most important information first while still making the complete documentation available when it's needed.
+I wanted a tool that was easier to read than man pages without losing the information that makes them useful. GOD is my attempt to bridge that gap by presenting the most useful information first while still making the complete documentation available when needed.
 
 Roadmap
 
