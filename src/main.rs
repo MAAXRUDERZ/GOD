@@ -1,8 +1,8 @@
+mod formatter;
 mod model;
+mod parser;
 mod provider;
 mod renderer;
-mod parser;
-mod formatter;
 mod ui;
 
 use clap::Parser;
@@ -15,24 +15,33 @@ use clap::Parser;
 struct Cli {
     /// Command to look up
     command: Option<String>,
+
+    /// Show every available flag
+    #[arg(long)]
+    all_flags: bool,
 }
 
 fn main() {
     let cli = Cli::parse();
 
     let Some(cmd) = cli.command else {
-        println!("Welcome to GOD!");
+        ui::logo::print_logo();
+
+        println!();
         println!("Usage:");
-        println!("    god <command>");
+        println!("  god <command>");
+        println!("  god <command> --all-flags");
+        println!();
+
         return;
     };
 
-    println!("GOD v0.1.0");
+    ui::logo::print_logo();
     println!("Command: {}\n", cmd);
 
     match provider::load(&cmd) {
         Some(doc) => {
-            renderer::render(&doc);
+            renderer::render(&doc, cli.all_flags);
         }
 
         None => {

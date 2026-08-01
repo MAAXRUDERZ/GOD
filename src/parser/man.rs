@@ -3,14 +3,14 @@ use crate::model::{CommandDoc, Flag};
 fn clean_option(text: &str) -> String {
     let mut result = text.to_string();
 
-    // Remove font formatting
+
     result = result
         .replace("\\fB", "")
         .replace("\\fP", "")
         .replace("\\fR", "")
         .replace("\\fI", "");
 
-    // Remove common roff escapes
+
     result = result
         .replace("\\-", "-")
         .replace("\\&", "")
@@ -18,7 +18,6 @@ fn clean_option(text: &str) -> String {
         .replace("\\/", "")
         .replace("\\ ", " ");
 
-    // Remove GNU groff escape sequences like \X'...'
     while let Some(start) = result.find("\\X'") {
         if let Some(end) = result[start + 3..].find('\'') {
             result.replace_range(start..=start + 3 + end, "");
@@ -27,7 +26,7 @@ fn clean_option(text: &str) -> String {
         }
     }
 
-    // Collapse multiple spaces into one
+
     result = result
         .split_whitespace()
         .collect::<Vec<_>>()
@@ -39,27 +38,30 @@ fn clean_option(text: &str) -> String {
 pub fn parse_man(content: &str) -> CommandDoc {
     let mut flags = Vec::new();
 
-    let mut lines = content.lines();
+    let lines: Vec<&str> = content.lines().collect();
 
     let mut name = String::new();
     let mut description = String::new();
 
     let mut in_description = false;
 
-    while let Some(line) = lines.next() {
-        // ----------------------------
-        // Parse NAME section
-        // ----------------------------
+    let mut i = 0;
+
+    while i < lines.len() {
+        let line = lines[i];
+
+
         if line == ".SH NAME" {
-            if let Some(next) = lines.next() {
-                let next = clean_option(next);
+            i += 1;
+
+            if i < lines.len() {
+                let next = clean_option(lines[i]);
 
                 if let Some((cmd, summary)) = next.split_once(" \\- ") {
                     name = cmd.trim().to_string();
 
                     let mut summary = summary.trim().to_string();
 
-                    // Capitalize first letter
                     if let Some(first) = summary.chars().next() {
                         summary.replace_range(
                             0..first.len_utf8(),
@@ -67,7 +69,6 @@ pub fn parse_man(content: &str) -> CommandDoc {
                         );
                     }
 
-                    // Add period if missing
                     if !summary.ends_with('.') {
                         summary.push('.');
                     }
@@ -78,18 +79,19 @@ pub fn parse_man(content: &str) -> CommandDoc {
                 }
             }
 
+            i += 1;
             continue;
         }
 
-        // ----------------------------
-        // Enter DESCRIPTION section
-        // ----------------------------
+
         if line == ".SH DESCRIPTION" {
             in_description = true;
+            i += 1;
             continue;
         }
 
         if !in_description {
+            i += 1;
             continue;
         }
 
@@ -98,19 +100,21 @@ pub fn parse_man(content: &str) -> CommandDoc {
             break;
         }
 
-        // ----------------------------
-        // Parse flags
-        // ----------------------------
-        if line == ".TP" {
-            let option_line = match lines.next() {
-                Some(l) => clean_option(l),
-                None => break,
-            };
 
-            let desc = match lines.next() {
-                Some(l) => clean_option(l),
-                None => String::new(),
-            };
+        if line == ".TP" {
+            i += 1;
+            if i >= lines.len() {
+                break;
+            }
+
+            let option_line = clean_option(lines[i]);
+
+            i += 1;
+            if i >= lines.len() {
+                break;
+            }
+
+            let desc = clean_option(lines[i]);
 
             let mut short = None;
             let mut long = None;
@@ -131,6 +135,8 @@ pub fn parse_man(content: &str) -> CommandDoc {
                 description: desc,
             });
         }
+
+        i += 1;
     }
 
     CommandDoc {
